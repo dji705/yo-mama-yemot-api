@@ -1,0 +1,9 @@
+{
+  "name": "yo-mama-yemot-vercel-adapter",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lightweight Yemot HaMashiach IVR adapter for Vercel Functions",
+  "type": "commonjs",
+  "engines": { "node": ">=20" },
+  "scripts": { "start": "node local.js", "test": "node --test" }
+}
