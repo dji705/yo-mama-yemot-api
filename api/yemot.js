@@ -7,14 +7,8 @@ function clean(value, max = 100) {
 }
 
 function yemotText(text) {
-  // Plain-text response for simple Yemot messages.
+  // Plain-text response for a Yemot external API flow.
   return `read=${clean(text, 1500)}`;
-}
-
-function yemotJoke(text) {
-  // Keep the call in a keypad-read dialog so Yemot can react to DTMF.
-  // ROUTE key actions are configured in the extension's ext.ini.
-  return `read=t-${clean(text, 1500)}=ROUTE,,1,1,NO,yes`;
 }
 
 function handler(req, res) {
@@ -54,7 +48,7 @@ function handler(req, res) {
 
   const pool = selectedCategory ? jokes[selectedCategory] : allJokes();
   if (!pool.length) return res.status(200).send(yemotText('אין כרגע בדיחות זמינות.'));
-  return res.status(200).send(yemotJoke(pickRandom(pool)));
+  return res.status(200).send(yemotText(pickRandom(pool)));
 }
 
 module.exports = handler;
