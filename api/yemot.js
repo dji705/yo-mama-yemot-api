@@ -7,9 +7,8 @@ function clean(value, max = 100) {
 }
 
 function yemotRead(text) {
-  // Read the joke aloud and collect a keypad input. The * key is handled
-  // by read_answer in ext.ini and returns the caller to the root menu.
-  return `read=t-${clean(text, 1500)}=JOKE,,1,1,20,No,,,,,,,,,`;
+  // Accept up to two keypad digits so 00 can be configured as the exit sequence.
+  return `read=t-${clean(text, 1500)}=JOKE,,1,2,20,No,,,,,,,,,`;
 }
 
 function handler(req, res) {
@@ -29,7 +28,7 @@ function handler(req, res) {
   }
 
   if (action === 'menu') {
-    return res.status(200).send(yemotRead('ברוכים הבאים לבדיחות קצרות. להגרלת בדיחה נוספת הקישו ספרה כלשהי. לחזרה לתפריט הראשי הקישו כוכבית.'));
+    return res.status(200).send(yemotRead('ברוכים הבאים לבדיחות קצרות. להגרלת בדיחה נוספת הקישו ספרה כלשהי. לחזרה לתפריט הראשי הקישו פעמיים על אפס.'));
   }
 
   let selectedCategory = category;
