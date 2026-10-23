@@ -7,8 +7,8 @@ function clean(value, max = 100) {
 }
 
 function yemotRead(text) {
-  // Collect one keypad digit; key 0 is configured in ext.ini to return to root.
-  return `read=t-${clean(text, 1500)}=JOKE,,1,1,20,No,,,,,,,,,`;
+  // Yemot's read action speaks the joke itself; say_api_answer should be disabled in ext.ini.
+  return `read=${clean(text, 1500)}=JOKE,,1,1,20,No,,,,,,,,,`;
 }
 
 function handler(req, res) {
