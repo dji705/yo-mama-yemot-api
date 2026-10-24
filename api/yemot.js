@@ -7,8 +7,8 @@ function clean(value, max = 100) {
 }
 
 function yemotRead(text) {
-  // Yemot's read action speaks the joke itself; say_api_answer should be disabled in ext.ini.
-  return `read=${clean(text, 1500)}=JOKE,,1,1,20,No,,,,,,,,,`;
+  // Yemot read format: speak once, collect one digit, then return input to this API.
+  return `read=${clean(text, 1500)}=JOKE,,1,1,Digits,yes`;
 }
 
 function handler(req, res) {
@@ -20,7 +20,6 @@ function handler(req, res) {
   const params = { ...(req.query || {}), ...(req.body && typeof req.body === 'object' ? req.body : {}) };
   const action = clean(params.action || params.op || params.mode || 'random', 30).toLowerCase();
   const category = clean(params.category || params.cat || '', 30).toLowerCase();
-  const digits = clean(params.ApiPhoneInput || params.ApiPhoneInput0 || params.val || params.Digits || params.digits || params.JOKE || '', 20);
 
   if (action === 'health' || action === 'status') {
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
@@ -28,25 +27,20 @@ function handler(req, res) {
   }
 
   if (action === 'menu') {
-    return res.status(200).send(yemotRead('ברוכים הבאים לבדיחות קצרות. להגרלת בדיחה נוספת הקישו ספרה כלשהי. לחזרה לתפריט הראשי הקישו אפס.'));
+    return res.status(200).send(yemotRead('ברוכים הבאים לבדיחות קצרות. לקבלת בדיחה נוספת הקישו ספרה כלשהי. לחזרה לתפריט הראשי הקישו אפס.'));
   }
-
-  let selectedCategory = category;
-  if (!selectedCategory && digits === '2') selectedCategory = 'animals';
-  if (!selectedCategory && digits === '3') selectedCategory = 'school';
-  if (!selectedCategory && digits === '1') selectedCategory = 'general';
 
   if (action === 'list' || action === 'all') {
-    const list = selectedCategory ? jokes[selectedCategory] : allJokes();
+    const list = category ? jokes[category] : allJokes();
     if (!list) return res.status(200).send(yemotRead('הקטגוריה לא נמצאה.'));
-    return res.status(200).send(yemotRead(list.join(' ')));
+    return res.status(200).send(yemotRead(pickRandom(list)));
   }
 
-  if (selectedCategory && !jokes[selectedCategory]) {
-    return res.status(200).send(yemotRead('הקטגוריה לא נמצאה. אפשר לבחור general, animals או school.'));
+  if (category && !jokes[category]) {
+    return res.status(200).send(yemotRead('הקטגוריה לא נמצאה.'));
   }
 
-  const pool = selectedCategory ? jokes[selectedCategory] : allJokes();
+  const pool = category ? jokes[category] : allJokes();
   if (!pool.length) return res.status(200).send(yemotRead('אין כרגע בדיחות זמינות.'));
   return res.status(200).send(yemotRead(pickRandom(pool)));
 }
